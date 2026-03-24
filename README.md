@@ -5,23 +5,11 @@
 This repo uses a **feature-branch + PR** workflow with strict ownership to minimize conflicts.
 
 ### 1) Branching Model
-We use two long-lived branches:
 
 - `main` → always stable / production-ready
-- `develop` → integration branch for ongoing work (what we merge into daily)
+**Rule:** Never push directly to `main`.
 
-**Rule:** Never push directly to `main` or `develop`.
-
-### 2) Branch Naming Convention (Required)
-Create branches off `develop`:
-
-- Features: `feat/<area>-<short-desc>`
-  - Examples: `feat/auth-jwt-refresh`, `feat/events-crud`, `feat/comments-api`
-- Fixes: `fix/<area>-<short-desc>`
-  - Example: `fix/events-duration-filter`
-- Refactor: `refactor/<area>-<short-desc>`
-- Chore/CI: `chore/<short-desc>`
-- Docs: `docs/<short-desc>`
+### 2) Create your branch then work on that
 
 **Rule:** One branch = one feature set. Keep branches small and reviewable.
 
@@ -31,7 +19,7 @@ To avoid two people editing the same files:
 - **Dev A owns**: `src/auth`, `src/users`, `src/common`, `src/prisma`, app bootstrap, config
 - **Dev B owns**: `src/events`, `src/uploads`, `src/event-images`, `src/event-steps`
 - **Dev C owns**: `src/likes`, `src/bookmarks`, `src/comments`, `src/ratings`, `src/stats`
-- **Dev D owns**: `src/categories`, `src/amenities`, seeds
+- **Dev D owns**: `src/categories`, `src/amenities`, 
 
 If you need to change files owned by someone else:
 1) Open a PR
@@ -50,29 +38,29 @@ Database schema conflicts are the most common source of team pain.
 
 **Before opening a PR that touches Prisma:**
 ```bash
-pnpm prisma format
-pnpm prisma migrate dev
-pnpm test
+npx prisma generate
+npx prisma migrate dev
 ```
+this may depend on your setup
 
-**If you pull new migrations from `develop`:**
+**If you pull new migrations from `main`:**
 ```bash
-git checkout develop
+git checkout main
 git pull
-pnpm install
-pnpm prisma migrate dev
+npm install
+npx prisma migrate dev
 ```
 
 ### 5) Daily Sync Rule (Rebase Strategy)
-To reduce merge conflicts, update your branch daily from `develop`.
+To reduce merge conflicts, update your branch daily from `main`.
 
 Preferred (clean history): **rebase**
 ```bash
-git checkout develop
+git checkout main
 git pull
 
 git checkout <your-branch>
-git rebase develop
+git rebase main
 ```
 
 If rebase conflicts happen:
@@ -95,11 +83,10 @@ Use a consistent convention:
 - `docs(readme): update git workflow section`
 
 ### 7) Pull Request (PR) Workflow (Required)
-**PR target:** Always open PRs into `develop`.
+**PR target:** Always open PRs into `main`.
 
 PR checklist (must pass before merge):
-- [ ] Branch is up to date with `develop`
-- [ ] Lint passes
+- [ ] Branch is up to date with `main`
 - [ ] Tests pass
 - [ ] Swagger/docs updated if new endpoints added
 - [ ] DTO validation included for all request bodies
@@ -123,7 +110,4 @@ Merge method:
   - add it in a clearly named shared location (e.g. `src/common/types`)
   - announce it in the team channel so others don’t duplicate it.
 
-### 9) Hotfix Policy
-If something is broken in production (main):
-1) Branch from `main`: `fix/hotfix-<desc>`
-2](#)
+# SEARCH FOR MORE AND LET'S IN THE GROUP
