@@ -110,4 +110,4 @@ Merge method:
   - add it in a clearly named shared location (e.g. `src/common/types`)
   - announce it in the team channel so others don’t duplicate it.
 
-# SEARCH FOR MORE AND LET'S IN THE GROUP
+# SEARCH FOR MORE AND LET'S DISCUSS IN THE GROUP
