@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
+//import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { EventsModule } from './events/events.module';
-import { EventImagesModule } from './event-images/event-images.module';
-import { EventStepsModule } from './event-steps/event-steps.module';
+import { EventImagesModule } from './events/event-images/event-images.module';
+import { EventStepsModule } from './events/event-steps/event-steps.module';
 import { UploadsModule } from './uploads/uploads.module';
 import { AuthModule } from './auth/auth.module';
 @Module({
@@ -23,7 +23,6 @@ import { AuthModule } from './auth/auth.module';
     EventImagesModule,
     EventStepsModule,
     UploadsModule,
-    AuthModule
   ],
   controllers: [AppController],
   providers: [AppService],
