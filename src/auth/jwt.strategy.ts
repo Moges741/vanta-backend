@@ -7,15 +7,12 @@ import { ConfigService } from '@nestjs/config';
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(private readonly configService: ConfigService) {
     super({
-      // Extract token from the Authorization header
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      // Read the secret securely from environment variables
-      secretOrKey: configService.get<string>('JWT_SECRET'),
+secretOrKey: configService.get<string>('JWT_SECRET') || 'fallback_secret',
     });
   }
 
-  // This payload is the decoded JWT. What we return here becomes `request.user`
   async validate(payload: any) {
     return { 
       id: payload.sub, 
