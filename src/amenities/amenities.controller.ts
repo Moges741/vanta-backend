@@ -17,7 +17,7 @@ export class AmenitiesController {
   @UseGuards(JwtAuthGuard)
   @Post()
   async create(@Body() createAmenityDto: CreateAmenityDto, @Req() req: any) {
-    const userId = req.user.sub;
+    const userId = req.user.id;
     return this.amenitiesService.create(createAmenityDto, userId);
   }
 }

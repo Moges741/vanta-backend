@@ -18,7 +18,7 @@ export class CategoriesController {
   @UseGuards(JwtAuthGuard)
   @Post()
   async create(@Body() createCategoryDto: CreateCategoryDto, @Req() req: any) {
-    const userId = req.user.sub; // from JWT payload
+    const userId = req.user.id; // from JWT payload
     return this.categoriesService.create(createCategoryDto, userId);
   }
 
