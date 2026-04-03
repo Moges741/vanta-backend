@@ -12,7 +12,6 @@ export class StatsController {
 
   @Get('event/:eventId/refresh')
   refreshEventStats(@Param('eventId') eventId: string) {
-    // Allows manual triggering/refresh of stats calculations
     return this.statsService.updateEventStats(eventId);
   }
 }

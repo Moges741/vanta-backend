@@ -4,7 +4,6 @@ import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { ConfigModule } from '@nestjs/config';
-import { AuthModule } from './auth/auth.module';
 import { EventsModule } from './events/events.module';
 import { EventImagesModule } from './events/event-images/event-images.module';
 import { EventStepsModule } from './events/event-steps/event-steps.module';
