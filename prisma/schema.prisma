@@ -175,7 +175,7 @@ model Comment {
 model Rating {
   userId  String
   eventId String
-  rating  Int    // 1 to 5
+  rating  Int    
 
   user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
   event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
@@ -183,7 +183,7 @@ model Rating {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@id([userId, eventId])   // One rating per user per event
+  @@id([userId, eventId])   
   @@index([eventId])
   @@map("ratings")
 }
