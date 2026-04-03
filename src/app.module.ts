@@ -10,6 +10,7 @@ import { EventImagesModule } from './events/event-images/event-images.module';
 import { EventStepsModule } from './events/event-steps/event-steps.module';
 import { UploadsModule } from './uploads/uploads.module';
 import { CategoriesModule } from './categories/categories.module';
+import { AmenitiesModule } from './amenities/amenities.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -24,6 +25,7 @@ import { CategoriesModule } from './categories/categories.module';
     EventStepsModule,
     UploadsModule,
     CategoriesModule,
+    AmenitiesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
