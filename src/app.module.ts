@@ -11,6 +11,12 @@ import { EventStepsModule } from './events/event-steps/event-steps.module';
 import { UploadsModule } from './uploads/uploads.module';
 import { CategoriesModule } from './categories/categories.module';
 import { AmenitiesModule } from './amenities/amenities.module';
+import { LikesModule } from './likes/likes.module';
+import { BookmarksModule } from './bookmarks/bookmarks.module';
+import { CommentsModule } from './comments/comments.module';
+import { RatingsModule } from './ratings/ratings.module';
+import { StatsModule } from './stats/stats.module';
+import { AuthModule } from './auth/auth.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -26,6 +32,12 @@ import { AmenitiesModule } from './amenities/amenities.module';
     UploadsModule,
     CategoriesModule,
     AmenitiesModule,
+        LikesModule,
+    BookmarksModule,
+    CommentsModule,
+    RatingsModule,
+    StatsModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
