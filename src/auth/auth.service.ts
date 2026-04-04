@@ -81,21 +81,18 @@ async signup(createUserDto: CreateUserDto) {
 
     if (!user) {
       this.logger.warn(`[ForgotPassword] Email not found in DB: ${email}. Faking success for security.`);
-      return; // Stop here, but controller will return 200 OK
+      return;
     }
 
     const resetToken = crypto.randomBytes(32).toString('hex');
     
-    // 2. Set expiration to 1 hour from now
     const expiresAt = new Date();
     expiresAt.setHours(expiresAt.getHours() + 1);
 
-    // 3. Delete any existing reset tokens for this user to prevent spam
     await this.prisma.passwordResetToken.deleteMany({
       where: { userId: user.id },
     });
 
-    // 4. Save the new token in the database
     await this.prisma.passwordResetToken.create({
       data: {
         token: resetToken,
@@ -106,51 +103,39 @@ async signup(createUserDto: CreateUserDto) {
 
     this.logger.log(`[ForgotPassword] Token generated for user ID: ${user.id}`);
 
-    // 5. Send the email
     const emailSent = await this.emailService.sendPasswordResetEmail(user.email, resetToken);
     
     if (!emailSent) {
       this.logger.error(`[ForgotPassword] Failed to send email to ${user.email}`);
-      // We don't throw an error to the user here to maintain security, but we log it.
     }
   }
 
-  /**
-   * Validates the token and updates the user's password.
-   */
   async resetPassword(token: string, newPassword: string): Promise<void> {
     this.logger.log(`[ResetPassword] Attempting to reset password with token`);
 
-    // 1. Find the token in the database
     const resetRecord = await this.prisma.passwordResetToken.findUnique({
       where: { token },
     });
 
-    // 2. Check if token exists
     if (!resetRecord) {
       this.logger.error(`[ResetPassword] Invalid token provided`);
       throw new BadRequestException('Invalid or expired password reset token');
     }
 
-    // 3. Check if token is expired
     if (resetRecord.expiresAt < new Date()) {
       this.logger.error(`[ResetPassword] Token expired for user ID: ${resetRecord.userId}`);
-      // Clean up expired token
       await this.prisma.passwordResetToken.delete({ where: { token } });
       throw new BadRequestException('Invalid or expired password reset token');
     }
 
-    // 4. Hash the new password securely
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(newPassword, salt);
 
-    // 5. Update the user's password
     await this.prisma.user.update({
       where: { id: resetRecord.userId },
       data: { password: hashedPassword },
     });
 
-    // 6. Delete the token so it can't be used again
     await this.prisma.passwordResetToken.delete({
       where: { token },
     });
