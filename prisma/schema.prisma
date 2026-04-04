@@ -22,6 +22,7 @@ model User {
   bookmarks     Bookmark[]
   comments      Comment[]
   ratings       Rating[]
+  passwordResetTokens PasswordResetToken[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -29,7 +30,18 @@ model User {
   @@index([email])
   @@map("users")
 }
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  expiresAt DateTime
 
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@map("password_reset_tokens")
+}
 model Category {
   id   String @id @default(cuid())
   name String @unique
