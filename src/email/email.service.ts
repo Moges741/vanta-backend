@@ -71,4 +71,22 @@ export class EmailService {
       return false;
     }
   }
+
+  async sendVerificationEmail(to: string, verificationLink: string) {
+  await this.resend.emails.send({
+    from: 'EventHub <noreply@eventhub.com>',   // Change this later
+    to: [to],
+    subject: 'Verify Your EventHub Account',
+    html: `
+      <h2>Welcome to EventHub!</h2>
+      <p>Please click the button below to verify your email address:</p>
+      <a href="${verificationLink}" 
+         style="background:#3b82f6; color:white; padding:14px 28px; text-decoration:none; border-radius:8px; display:inline-block;">
+        Verify My Email
+      </a>
+      <p>This link will expire in 24 hours.</p>
+      <p>If you didn't create this account, please ignore this email.</p>
+    `,
+  });
+}
 }

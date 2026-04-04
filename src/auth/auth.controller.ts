@@ -1,4 +1,4 @@
-import { Controller, Post, Body, HttpCode, HttpStatus, UseGuards, Req } from '@nestjs/common';
+import { Controller, Post, Body, HttpCode, HttpStatus, UseGuards, Req, Get, Query, BadRequestException, } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginDto } from './dto/login.dto';
@@ -58,4 +58,14 @@ export class AuthController {
       message: 'Password has been successfully reset. You can now log in with your new password.',
     };
   }
+
+  @Public()
+@Get('verify-email')
+async verifyEmail(@Query('token') token: string, @Query('email') email: string) {
+  if (!token || !email) {
+    throw new BadRequestException('Invalid verification link');
+  }
+
+  return this.authService.verifyEmail(token, email);
+}
 }

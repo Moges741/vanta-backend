@@ -13,6 +13,7 @@ model User {
   email     String   @unique
   password  String   // hashed
   role      Role     @default(USER)
+  isVerified  Boolean  @default(false)     
   avatarUrl String? 
   bio       String?  @db.Text
 

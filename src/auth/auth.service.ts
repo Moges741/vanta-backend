@@ -5,8 +5,8 @@ import { UsersService } from '../users/users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginDto } from './dto/login.dto';
 import * as bcrypt from 'bcrypt';
-// import { ForgotPasswordDto } from './dto/forgot-password.dto';
-// import { ResetPasswordDto } from './dto/reset-password.dto';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 import * as crypto from 'crypto';
 import { PrismaService } from '../prisma/prisma.service';
 import { EmailService } from '../email/email.service';
@@ -22,24 +22,36 @@ export class AuthService {
     private readonly emailService: EmailService,
   ) {}
 
-  async signup(createUserDto: CreateUserDto) {
-    const existingUser = await this.usersService.findByEmail(createUserDto.email);
-    if (existingUser) {
-      throw new HttpException('User with this email already exists', HttpStatus.CONFLICT);
-    }
+async signup(createUserDto: CreateUserDto) {
+  const existingUser = await this.usersService.findByEmail(createUserDto.email);
 
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(createUserDto.password, salt);
-
-    const user = await this.usersService.createUser({
-      ...createUserDto,
-      password: hashedPassword,
-    });
-
-    const token = this.generateToken(user);
-
-    return { user, token };
+  if (existingUser) {
+    throw new HttpException(
+      'This email is already registered. Please login instead.', 
+      HttpStatus.CONFLICT
+    );
   }
+
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(createUserDto.password, salt);
+
+  const user = await this.usersService.createUser({
+    name: createUserDto.name,
+    email: createUserDto.email,
+    password: hashedPassword,
+  });
+
+  const token = this.generateToken(user);
+
+  return {
+    success: true,
+    message: 'Account created successfully',
+    data: {
+      user,
+      token,
+    },
+  };
+}
 
   async login(loginDto: LoginDto) {
     const user = await this.usersService.findByEmail(loginDto.email);
@@ -61,65 +73,6 @@ export class AuthService {
 
 
 
-// async forgotPassword(dto: ForgotPasswordDto) {
-//   const user = await this.usersService.findByEmail(dto.email);
-
-//   if (!user) {
-//     return { 
-//       success: true, 
-//       message: 'If your email exists, you will receive a reset link.' 
-//     };
-//   }
-
-//   const resetToken = crypto.randomBytes(32).toString('hex');
-//   const expiresAt = new Date(Date.now() + 30 * 60 * 1000);
-
-//   await this.prisma.passwordResetToken.create({
-//     data: { token: resetToken, userId: user.id, expiresAt },
-//   });
-
-//   const frontendUrl = this.configService.get<string>('FRONTEND_URL') || 'http://localhost:3000';
-//   const resetLink = `${frontendUrl}/reset-password?token=${resetToken}`;
-
-//   console.log('\n🔗 FULL RESET LINK:');
-//   console.log(resetLink);
-//   console.log('=====================================\n');
-
-//   // Try to send email and show clear error
-//   try {
-//     await this.emailService.sendPasswordResetEmail(user.email, resetLink);
-//     console.log(`✅ Email successfully sent to: ${user.email}`);
-//   } catch (err: any) {
-//     console.error('❌ FAILED TO SEND EMAIL:', err.message);
-//     console.error('Check your RESEND_API_KEY and EmailService');
-//   }
-
-//   return { 
-//     success: true, 
-//     message: 'Password reset link sent (check console for link)' 
-//   };
-// }
-// async resetPassword(dto: ResetPasswordDto) {
-//   const resetRecord = await this.prisma.passwordResetToken.findUnique({
-//     where: { token: dto.token },
-//   });
-
-//   if (!resetRecord || resetRecord.expiresAt < new Date()) {
-//     throw new BadRequestException('Invalid or expired reset token');
-//   }
-
-//   const hashedPassword = await bcrypt.hash(dto.newPassword, 10);
-
-//   await this.prisma.user.update({
-//     where: { id: resetRecord.userId },
-//     data: { password: hashedPassword },
-//   });
-
-//   // Delete used token
-//   await this.prisma.passwordResetToken.delete({ where: { id: resetRecord.id } });
-
-//   return { success: true, message: 'Password reset successfully. You can now login.' };
-// }
 
   async forgotPassword(email: string): Promise<void> {
     this.logger.log(`[ForgotPassword] Initiated for email: ${email}`);
@@ -131,7 +84,6 @@ export class AuthService {
       return; // Stop here, but controller will return 200 OK
     }
 
-    // 1. Generate a secure, random 64-character token
     const resetToken = crypto.randomBytes(32).toString('hex');
     
     // 2. Set expiration to 1 hour from now
@@ -212,4 +164,32 @@ export class AuthService {
   }
 
 
+async verifyEmail(token: string, email: string) {
+  this.logger.log(`[VerifyEmail] Attempt for email: ${email}`);
+
+  const user = await this.usersService.findByEmail(email);
+
+  if (!user) {
+    throw new BadRequestException('User not found');
+  }
+
+  if (user.isVerified) {
+    return {
+      success: true,
+      message: 'Your email is already verified.',
+    };
+  }
+
+    await this.prisma.user.update({
+    where: { id: user.id },
+    data: { isVerified: true },
+  });
+
+  this.logger.log(`[VerifyEmail] Success for user: ${email}`);
+
+  return {
+    success: true,
+    message: 'Your email has been successfully verified! You can now login.',
+  };
+}
 }
