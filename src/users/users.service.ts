@@ -66,7 +66,7 @@ export class UsersService {
     return userWithoutPassword;
   }
 
-  async updateUserRole(userId: string, newRole: 'USER' | 'OWNER'): Promise<Omit<User, 'password'> | null> {
+  async updateUserRole(userId: string, newRole: 'USER' | 'OWNER' | 'ADMIN'): Promise<Omit<User, 'password'> | null> {
     const user = await this.prisma.user.update({
       where: { id: userId },
       data: { role: newRole },
@@ -91,5 +91,9 @@ export class UsersService {
       ...this.excludePassword(user),
       status: statusMap.get(user.id) ?? null,
     })) as any;
+  }
+
+  async countUsers(): Promise<number> {
+    return this.prisma.user.count();
   }
 }
