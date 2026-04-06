@@ -62,4 +62,16 @@ export class UsersController {
       data: users,
     };
   }
+
+  @Get('count')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  async getUsersCount() {
+    const totalUsers = await this.usersService.countUsers();
+    return {
+      success: true,
+      message: 'Users count retrieved successfully',
+      data: { totalUsers },
+    };
+  }
 }
