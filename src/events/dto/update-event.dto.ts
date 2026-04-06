@@ -1,4 +1,4 @@
-import { IsOptional, IsString, IsNumber, IsBoolean } from 'class-validator';
+import { IsOptional, IsString, IsNumber, IsBoolean, IsISO8601 } from 'class-validator';
 
 export class UpdateEventDto {
   @IsOptional()
@@ -28,4 +28,12 @@ export class UpdateEventDto {
   @IsOptional()
   @IsString()
   categoryId?: string;
+
+  @IsOptional()
+  @IsISO8601()
+  startDate?: string;
+
+  @IsOptional()
+  @IsISO8601()
+  endDate?: string;
 }

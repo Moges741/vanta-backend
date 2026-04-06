@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateEventDto } from './dto/create-event.dto'; 
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { UpdateEventDto } from './dto/update-event.dto'; 
@@ -31,8 +31,16 @@ async create(userId: string, dto: CreateEventDto) {
   }
   return this.prisma.event.create({
     data: {
-      ...dto,
+      title: dto.title,
+      description: dto.description,
+      duration: dto.duration,
+      location: dto.location,
+      isPaid: dto.isPaid,
+      price: dto.price,
+      categoryId: dto.categoryId,
       creatorId: userId,
+      startDate: new Date(dto.startDate),
+      endDate: dto.endDate ? new Date(dto.endDate) : undefined,
     },
   });
 }
@@ -54,7 +62,11 @@ async update(eventId: string, userId: string, dto: UpdateEventDto) {
 
   return this.prisma.event.update({
     where: { id: eventId },
-    data: dto,
+    data: {
+      ...dto,
+      startDate: dto.startDate ? new Date(dto.startDate) : undefined,
+      endDate: dto.endDate ? new Date(dto.endDate) : undefined,
+    },
   });
 }
 
@@ -75,5 +87,8 @@ async remove(eventId: string, userId: string) {
     where: { id: eventId },
   });
 }
-}
 
+  async count() {
+    return this.prisma.event.count();
+  }
+}

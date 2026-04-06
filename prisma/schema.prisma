@@ -7,12 +7,18 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+generator seed {
+  provider = "ts-node"
+  from      = "./seed.ts"
+}
+
 model User {
   id        String   @id @default(cuid())
   name      String
   email     String   @unique
   password  String   // hashed
   role      Role     @default(USER)
+  status    UserStatus @default(ACTIVE)
   avatarUrl String? 
   bio       String?  @db.Text
 
@@ -70,6 +76,8 @@ model Event {
   comments   Comment[]
   ratings    Rating[]
 
+  startDate DateTime?
+  endDate   DateTime?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -191,6 +199,13 @@ model Rating {
 enum Role {
   USER
   ADMIN
+  OWNER
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  BANNED
 }
 
 

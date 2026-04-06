@@ -4,12 +4,15 @@ import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { ConfigModule } from '@nestjs/config';
-import { AuthModule } from './auth/auth.module';
+//import { AuthModule } from './auth/auth.module';
 import { EventsModule } from './events/events.module';
 import { EventImagesModule } from './events/event-images/event-images.module';
 import { EventStepsModule } from './events/event-steps/event-steps.module';
 import { UploadsModule } from './uploads/uploads.module';
 import { AuthModule } from './auth/auth.module';
+import { AdminModule } from './admin/admin.module';
+import { AppController } from './app.controller';
+import { RolesGuard } from './common/guards/roles.guard';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -23,8 +26,9 @@ import { AuthModule } from './auth/auth.module';
     EventImagesModule,
     EventStepsModule,
     UploadsModule,
+    AdminModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, RolesGuard],
 })
 export class AppModule {}

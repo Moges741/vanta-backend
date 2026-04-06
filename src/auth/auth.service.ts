@@ -1,4 +1,4 @@
-import { Injectable, HttpException, HttpStatus, UnauthorizedException } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus, UnauthorizedException, ForbiddenException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -40,6 +40,10 @@ export class AuthService {
     const isPasswordValid = await bcrypt.compare(loginDto.password, user.password);
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid email or password');
+    }
+    const status = await this.usersService.getStatusByEmail(loginDto.email);
+    if (status !== 'ACTIVE') {
+      throw new ForbiddenException('Your account is not active. Contact support.');
     }
 
     const { password, ...userWithoutPassword } = user;
