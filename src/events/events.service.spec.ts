@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { beforeEach, describe, expect, it } from '@jest/globals';
 import { EventsService } from './events.service';
 import { PrismaService } from '../../prisma/prisma.service';
 
