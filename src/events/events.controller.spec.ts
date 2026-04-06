@@ -1,5 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { beforeEach, describe, expect, it } from '@jest/globals';
 import { EventsController } from './events.controller';
+import { EventsService } from './events.service';
 
 describe('EventsController', () => {
   let controller: EventsController;
@@ -7,6 +9,7 @@ describe('EventsController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [EventsController],
+      providers: [{ provide: EventsService, useValue: {} }],
     }).compile();
 
     controller = module.get<EventsController>(EventsController);

@@ -16,6 +16,9 @@ import { CommentsModule } from './comments/comments.module';
 import { RatingsModule } from './ratings/ratings.module';
 import { StatsModule } from './stats/stats.module';
 import { AuthModule } from './auth/auth.module';
+import { AdminModule } from './admin/admin.module';
+import { AppController } from './app.controller';
+import { RolesGuard } from './common/guards/roles.guard';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -29,6 +32,7 @@ import { AuthModule } from './auth/auth.module';
     EventImagesModule,
     EventStepsModule,
     UploadsModule,
+    AdminModule,
     CategoriesModule,
     AmenitiesModule,
         LikesModule,
@@ -39,6 +43,6 @@ import { AuthModule } from './auth/auth.module';
     AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, RolesGuard],
 })
 export class AppModule {}
