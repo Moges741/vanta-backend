@@ -2,7 +2,7 @@ import { Express } from 'express';
 import { Controller,Delete, Post, UploadedFiles, UseInterceptors, Param, UseGuards, Req, Patch } from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { EventImagesService } from './event-images.service';
-import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../../../prismar/auth/jwt-auth.guard';
 
 @Controller('events/:eventId/images')
 export class EventImagesController {

@@ -10,7 +10,7 @@ import {
   Patch,
 } from '@nestjs/common';
 import { EventStepsService } from './event-steps.service';
-import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../../../prismar/auth/jwt-auth.guard';
 import { CreateStepDto } from './dto/create-step.dto';
 import { UpdateStepDto } from './dto/update-step.dto';
 import { ReorderStepsDto } from './dto/reorder-steps.dto';
