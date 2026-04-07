@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, UseGuards, Req, Param, Put, Delete } from 
 import { AmenitiesService } from './amenities.service';
 import { EventAmenitiesService } from './event-amenities.service';
 import { CreateAmenityDto } from './dto/create-amenity.dto';
-import { AddAmenitiesDto } from '../events/dto/add-amenities.dto';
+import { AddAmenitiesDto } from './dto/add-amenities.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { Public } from '../common/decorators/public.decorator';
 
