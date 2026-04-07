@@ -17,12 +17,11 @@ import { RatingsModule } from './ratings/ratings.module';
 import { StatsModule } from './stats/stats.module';
 import { AuthModule } from './auth/auth.module';
 import { AdminModule } from './admin/admin.module';
-import { AppController } from './app.controller';
 import { RolesGuard } from './common/guards/roles.guard';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true, 
+      isGlobal: true,
       envFilePath: '.env',
     }),
     PrismaModule,
@@ -35,7 +34,7 @@ import { RolesGuard } from './common/guards/roles.guard';
     AdminModule,
     CategoriesModule,
     AmenitiesModule,
-        LikesModule,
+    LikesModule,
     BookmarksModule,
     CommentsModule,
     RatingsModule,
