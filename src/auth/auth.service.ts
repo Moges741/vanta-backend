@@ -7,6 +7,15 @@ import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 import { PrismaService } from '../prisma/prisma.service';
 import { EmailService } from '../email/email.service';
+
+type PasswordResetTokenRow = {
+  id: string;
+  token: string;
+  userId: string;
+  expiresAt: Date;
+  createdAt: Date;
+};
+
 @Injectable()
 export class AuthService {
  private readonly logger = new Logger(AuthService.name);
@@ -89,17 +98,15 @@ async signup(createUserDto: CreateUserDto) {
     const expiresAt = new Date();
     expiresAt.setHours(expiresAt.getHours() + 1);
 
-    await this.prisma.passwordResetToken.deleteMany({
-      where: { userId: user.id },
-    });
+    await this.prisma.$executeRaw`
+      DELETE FROM "password_reset_tokens"
+      WHERE "userId" = ${user.id}
+    `;
 
-    await this.prisma.passwordResetToken.create({
-      data: {
-        token: resetToken,
-        userId: user.id,
-        expiresAt,
-      },
-    });
+    await this.prisma.$executeRaw`
+      INSERT INTO "password_reset_tokens" ("id", "token", "userId", "expiresAt", "createdAt")
+      VALUES (${crypto.randomUUID()}, ${resetToken}, ${user.id}, ${expiresAt}, NOW())
+    `;
 
     this.logger.log(`[ForgotPassword] Token generated for user ID: ${user.id}`);
 
@@ -113,9 +120,12 @@ async signup(createUserDto: CreateUserDto) {
   async resetPassword(token: string, newPassword: string): Promise<void> {
     this.logger.log(`[ResetPassword] Attempting to reset password with token`);
 
-    const resetRecord = await this.prisma.passwordResetToken.findUnique({
-      where: { token },
-    });
+    const [resetRecord] = await this.prisma.$queryRaw<PasswordResetTokenRow[]>`
+      SELECT "id", "token", "userId", "expiresAt", "createdAt"
+      FROM "password_reset_tokens"
+      WHERE "token" = ${token}
+      LIMIT 1
+    `;
 
     if (!resetRecord) {
       this.logger.error(`[ResetPassword] Invalid token provided`);
@@ -124,7 +134,10 @@ async signup(createUserDto: CreateUserDto) {
 
     if (resetRecord.expiresAt < new Date()) {
       this.logger.error(`[ResetPassword] Token expired for user ID: ${resetRecord.userId}`);
-      await this.prisma.passwordResetToken.delete({ where: { token } });
+      await this.prisma.$executeRaw`
+        DELETE FROM "password_reset_tokens"
+        WHERE "token" = ${token}
+      `;
       throw new BadRequestException('Invalid or expired password reset token');
     }
 
@@ -136,9 +149,10 @@ async signup(createUserDto: CreateUserDto) {
       data: { password: hashedPassword },
     });
 
-    await this.prisma.passwordResetToken.delete({
-      where: { token },
-    });
+    await this.prisma.$executeRaw`
+      DELETE FROM "password_reset_tokens"
+      WHERE "token" = ${token}
+    `;
 
     this.logger.log(`[ResetPassword] Password successfully changed for user ID: ${resetRecord.userId}`);
   }
@@ -147,35 +161,39 @@ async signup(createUserDto: CreateUserDto) {
     const payload = { sub: user.id, email: user.email, role: user.role };
     return this.jwtService.sign(payload);
   }
-}
 
+  async verifyEmail(token: string, email: string) {
+    this.logger.log(`[VerifyEmail] Attempt for email: ${email}`);
 
-async verifyEmail(token: string, email: string) {
-  this.logger.log(`[VerifyEmail] Attempt for email: ${email}`);
+    const [user] = await this.prisma.$queryRaw<Array<{ id: string; isVerified: boolean }>>`
+      SELECT "id", "isVerified"
+      FROM "users"
+      WHERE "email" = ${email}
+      LIMIT 1
+    `;
 
-  const user = await this.usersService.findByEmail(email);
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
 
-  if (!user) {
-    throw new BadRequestException('User not found');
-  }
+    if (user.isVerified) {
+      return {
+        success: true,
+        message: 'Your email is already verified.',
+      };
+    }
 
-  if (user.isVerified) {
+    await this.prisma.$executeRaw`
+      UPDATE "users"
+      SET "isVerified" = true
+      WHERE "id" = ${user.id}
+    `;
+
+    this.logger.log(`[VerifyEmail] Success for user: ${email}`);
+
     return {
       success: true,
-      message: 'Your email is already verified.',
+      message: 'Your email has been successfully verified! You can now login.',
     };
   }
-
-    await this.prisma.user.update({
-    where: { id: user.id },
-    data: { isVerified: true },
-  });
-
-  this.logger.log(`[VerifyEmail] Success for user: ${email}`);
-
-  return {
-    success: true,
-    message: 'Your email has been successfully verified! You can now login.',
-  };
-}
 }
