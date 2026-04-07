@@ -68,4 +68,12 @@ async verifyEmail(@Query('token') token: string, @Query('email') email: string) 
 
   return this.authService.verifyEmail(token, email);
 }
+@UseGuards(JwtAuthGuard)
+@Post('logout')
+async logout() {
+  return {
+    success: true,
+    message: 'Logged out successfully',
+  };
+}
 }

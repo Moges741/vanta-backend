@@ -30,7 +30,19 @@ export class EventsService {
       orderBy: { createdAt: 'desc' },
     });
   }
+// find single event by id
+  async findOne(id: string) {
+    const event = await this.prisma.event.findUnique({
+      where: { id },
+      include: { creator: true, category: true, amenities: true, images: true },
+    });
 
+    if (!event) {
+      throw new NotFoundException('Event not found');
+    }
+
+    return event;
+  }
   async findByCreator(creatorId: string) {
     return this.prisma.event.findMany({
       where: { creatorId },

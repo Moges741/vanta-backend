@@ -15,40 +15,47 @@ import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
-
+import {Public} from '../common/decorators/public.decorator';
 @Controller('events')
 export class EventsController {
   constructor(private readonly eventsService: EventsService) {}
-
-  @UseGuards(JwtAuthGuard)
+  @Public()
   @Get()
-  findAll(@Req() req) {
-    console.log('Logged in user id:', req.user.id);
+  findAll() {
     return this.eventsService.findAll();
   }
-
+// get single event by id
+  @Public()
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.eventsService.findOne(id);
+  }
   @Get('count')
   async count() {
     const count = await this.eventsService.count();
     return { total: count };
   }
 
-   // Get events by specific user id
   @UseGuards(JwtAuthGuard)
   @Get('creator/:id')
   findByCreator(@Param('id') creatorId: string) {
     return this.eventsService.findByCreator(creatorId);
   }
 
-  @Post()
-  @UseGuards(JwtAuthGuard)
-  create(@CurrentUser() user, @Body() dto: CreateEventDto) {
-    if (user.role !== 'ADMIN') {
-      throw new ForbiddenException('Only admins can create events');
-    }
+  // @Post()
+  // @UseGuards(JwtAuthGuard)
+  // create(@CurrentUser() user, @Body() dto: CreateEventDto) {
+  //   if (user.role !== 'ADMIN') {
+  //     throw new ForbiddenException('Only admins can create events');
+  //   }
 
-    return this.eventsService.create(user.id, dto);
-  }
+  //   return this.eventsService.create(user.id, dto);
+  // }
+  @Post()
+@UseGuards(JwtAuthGuard)
+create(@CurrentUser() user, @Body() dto: CreateEventDto) {
+  return this.eventsService.create(user.id, dto);
+}
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
