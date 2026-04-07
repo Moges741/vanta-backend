@@ -19,6 +19,7 @@ model User {
   password  String   // hashed
   role      Role     @default(USER)
   status    UserStatus @default(ACTIVE)
+  isVerified  Boolean  @default(false)     
   avatarUrl String? 
   bio       String?  @db.Text
 
@@ -28,6 +29,7 @@ model User {
   bookmarks     Bookmark[]
   comments      Comment[]
   ratings       Rating[]
+  passwordResetTokens PasswordResetToken[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -35,7 +37,18 @@ model User {
   @@index([email])
   @@map("users")
 }
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  expiresAt DateTime
 
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@map("password_reset_tokens")
+}
 model Category {
   id   String @id @default(cuid())
   name String @unique
@@ -183,7 +196,7 @@ model Comment {
 model Rating {
   userId  String
   eventId String
-  rating  Int    // 1 to 5
+  rating  Int    
 
   user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
   event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
@@ -191,7 +204,7 @@ model Rating {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@id([userId, eventId])   // One rating per user per event
+  @@id([userId, eventId])   
   @@index([eventId])
   @@map("ratings")
 }
