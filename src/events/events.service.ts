@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateEventDto } from './dto/create-event.dto'; 
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
-import { UpdateEventDto } from './dto/update-event.dto'; 
+import { UpdateEventDto } from './dto/update-event.dto';
 
 @Injectable()
 export class EventsService {
