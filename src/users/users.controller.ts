@@ -1,7 +1,8 @@
-import { Controller, Get, NotFoundException, Patch, Param, Body, ForbiddenException } from '@nestjs/common';
+import { Controller, Get, NotFoundException, Patch, Param, Body, ForbiddenException, Req } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { UpdateUserRoleDto } from './dto/update-user-role.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
 import { UseGuards } from '@nestjs/common';
@@ -51,6 +52,31 @@ export class UsersController {
     };
   }
 
+  @Patch(':id')
+  @UseGuards(JwtAuthGuard)
+  async updateUser(
+    @Param('id') userId: string,
+    @Body() updateUserDto: UpdateUserDto,
+    @Req() req: any,
+  ) {
+    // Allow users to update their own data or admins to update any
+    if (req.user.id !== userId && req.user.role !== 'ADMIN') {
+      throw new ForbiddenException('You can only update your own profile');
+    }
+
+    const updatedUser = await this.usersService.updateUser(userId, updateUserDto);
+
+    if (!updatedUser) {
+      throw new NotFoundException('User not found');
+    }
+
+    return {
+      success: true,
+      message: 'User updated successfully',
+      data: updatedUser,
+    };
+  }
+
   @Get()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
@@ -60,6 +86,18 @@ export class UsersController {
       success: true,
       message: 'Users retrieved successfully',
       data: users,
+    };
+  }
+
+  @Get('count')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  async getUsersCount() {
+    const totalUsers = await this.usersService.countUsers();
+    return {
+      success: true,
+      message: 'Users count retrieved successfully',
+      data: { totalUsers },
     };
   }
 }

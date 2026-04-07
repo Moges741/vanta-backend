@@ -20,10 +20,9 @@ export class CategoriesService {
   }
 
   async create(createCategoryDto: CreateCategoryDto, userId: string) {
-    // Check if user is admin (you can replace with RolesGuard later)
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
-    if (user?.role !== 'ADMIN') {
-      throw new BadRequestException('Only admins can create categories');
+    if (!user || !['ADMIN', 'OWNER'].includes(user.role)) {
+      throw new BadRequestException('Only admins or owners can create categories');
     }
 
     // Prevent duplicate category
@@ -48,8 +47,8 @@ export class CategoriesService {
 
   async update(id: string, updateCategoryDto: UpdateCategoryDto, userId: string) {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
-    if (user?.role !== 'ADMIN') {
-      throw new BadRequestException('Only admins can update categories');
+    if (!user || !['ADMIN', 'OWNER'].includes(user.role)) {
+      throw new BadRequestException('Only admins or owners can update categories');
     }
 
     const category = await this.prisma.category.findUnique({ where: { id } });
@@ -81,8 +80,8 @@ export class CategoriesService {
 
   async remove(id: string, userId: string) {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
-    if (user?.role !== 'ADMIN') {
-      throw new BadRequestException('Only admins can delete categories');
+    if (!user || !['ADMIN', 'OWNER'].includes(user.role)) {
+      throw new BadRequestException('Only admins or owners can delete categories');
     }
 
     const category = await this.prisma.category.findUnique({ where: { id } });

@@ -2,14 +2,31 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateEventDto } from './dto/create-event.dto'; 
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
-import { UpdateEventDto } from './dto/update-event.dto'; 
+import { UpdateEventDto } from './dto/update-event.dto';
 
 @Injectable()
 export class EventsService {
   constructor(private prisma: PrismaService) {}
+
+  private readonly eventDetailsInclude = {
+    creator: true,
+    category: true,
+    images: true,
+    amenities: {
+      include: {
+        amenity: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    },
+  };
+
  async findAll() {
     return this.prisma.event.findMany({
-      include: { creator: true, category: true, amenities: true, images: true },
+      include: this.eventDetailsInclude,
       orderBy: { createdAt: 'desc' },
     });
   }
@@ -17,7 +34,7 @@ export class EventsService {
   async findByCreator(creatorId: string) {
     return this.prisma.event.findMany({
       where: { creatorId },
-      include: { category: true, amenities: true, images: true },
+      include: this.eventDetailsInclude,
       orderBy: { createdAt: 'desc' },
     });
   }
@@ -42,6 +59,7 @@ async create(userId: string, dto: CreateEventDto) {
       startDate: new Date(dto.startDate),
       endDate: dto.endDate ? new Date(dto.endDate) : undefined,
     },
+    include: this.eventDetailsInclude,
   });
 }
 
@@ -67,6 +85,7 @@ async update(eventId: string, userId: string, dto: UpdateEventDto) {
       startDate: dto.startDate ? new Date(dto.startDate) : undefined,
       endDate: dto.endDate ? new Date(dto.endDate) : undefined,
     },
+    include: this.eventDetailsInclude,
   });
 }
 
