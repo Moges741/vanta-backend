@@ -1,0 +1,65 @@
+{
+  "info": {
+    "name": "Additional Vanta API Endpoints Collection",
+    "description": "Additional API endpoints not included in the main events collection. This includes general app endpoints.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "App",
+      "item": [
+        {
+          "name": "Get Hello",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/", "host": ["{{baseUrl}}"], "path": [""] },
+            "description": "Returns a hello message from the app. This is the root endpoint."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Get Users Count",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" }
+            ],
+            "url": { "raw": "{{baseUrl}}/users/count", "host": ["{{baseUrl}}"], "path": ["users", "count"] },
+            "description": "Returns total number of users. Requires admin role."
+          }
+        },
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" }
+            ],
+            "url": { "raw": "{{baseUrl}}/users", "host": ["{{baseUrl}}"], "path": ["users"] },
+            "description": "Returns all users. Requires admin role."
+          }
+        },
+        {
+          "name": "Update User Role",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" },
+              { "key": "Content-Type", "value": "application/json", "type": "text" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"role\": \"OWNER\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/users/:id/role", "host": ["{{baseUrl}}"], "path": ["users", ":id", "role"] },
+            "description": "Updates a user's role to USER, OWNER, or ADMIN. Requires admin role."
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -21,7 +21,7 @@ import { RolesGuard } from './common/guards/roles.guard';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true, 
+      isGlobal: true,
       envFilePath: '.env',
     }),
     PrismaModule,
@@ -34,7 +34,7 @@ import { RolesGuard } from './common/guards/roles.guard';
     AdminModule,
     CategoriesModule,
     AmenitiesModule,
-        LikesModule,
+    LikesModule,
     BookmarksModule,
     CommentsModule,
     RatingsModule,
