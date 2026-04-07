@@ -33,7 +33,7 @@ export class AdminService {
           images: true,
           amenities: true,
         },
-        orderBy: { startDate: 'asc' },
+        orderBy: { createdAt: 'asc' },
       }),
       this.prisma.user.count(),
       this.prisma.event.count(),
@@ -48,9 +48,12 @@ export class AdminService {
     };
 
     const eventsWithStatus = events.map((event) => {
-      const startDate = event.startDate;
-      const endDate = event.endDate;
-      let status = 'undated';
+      const startDate = event.createdAt;
+      const endDate =
+        event.duration > 0
+          ? new Date(startDate.getTime() + event.duration * 60 * 60 * 1000)
+          : null;
+      let status: keyof typeof categorized = 'undated';
 
       if (!startDate) {
         status = 'undated';

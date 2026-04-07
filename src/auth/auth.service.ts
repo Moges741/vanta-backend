@@ -147,10 +147,7 @@ async signup(createUserDto: CreateUserDto) {
     const payload = { sub: user.id, email: user.email, role: user.role };
     return this.jwtService.sign(payload);
   }
-}
-
-
-async verifyEmail(token: string, email: string) {
+  async verifyEmail(token: string, email: string) {
   this.logger.log(`[VerifyEmail] Attempt for email: ${email}`);
 
   const user = await this.usersService.findByEmail(email);
@@ -179,3 +176,6 @@ async verifyEmail(token: string, email: string) {
   };
 }
 }
+
+
+

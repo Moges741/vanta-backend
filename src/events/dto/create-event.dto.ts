@@ -3,14 +3,14 @@ import { IsString, IsNotEmpty, IsNumber, IsOptional, IsBoolean, IsISO8601 } from
 export class CreateEventDto {
   @IsString()
   @IsNotEmpty()
-  title: string;
+  title!: string;
 
   @IsString()
   @IsNotEmpty()
-  description: string;
+  description!: string;
 
   @IsNumber()
-  duration: number;
+  duration!: number;
 
   @IsOptional()
   @IsString()
@@ -25,11 +25,11 @@ export class CreateEventDto {
   price?: number;
 
   @IsString()
-  categoryId: string;
+  categoryId!: string;
 
   @IsISO8601()
   @IsNotEmpty()
-  startDate: string;
+  startDate!: string;
 
   @IsOptional()
   @IsISO8601()
