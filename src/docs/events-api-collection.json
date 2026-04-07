@@ -1,0 +1,248 @@
+{
+  "info": {
+    "name": "Vanta Events API Collection",
+    "description": "API endpoints for managing events, steps, and images. All endpoints require authentication except where noted. Replace {{token}} with your JWT token. Example payloads are provided for each endpoint.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Events",
+      "item": [
+        {
+          "name": "Get All Events",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" }
+            ],
+            "url": { "raw": "{{baseUrl}}/events", "host": ["{{baseUrl}}"], "path": ["events"] },
+            "description": "Returns all events for the authenticated user."
+          }
+        },
+        {
+          "name": "Count Events",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/events/count", "host": ["{{baseUrl}}"], "path": ["events", "count"] },
+            "description": "Returns the total count of all events in the database. No authentication required."
+          }
+        },
+        {
+          "name": "Get Events by Creator",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" }
+            ],
+            "url": { "raw": "{{baseUrl}}/events/creator/:id", "host": ["{{baseUrl}}"], "path": ["events", "creator", ":id"] },
+            "description": "Returns all events created by a specific user (provide user id in :id)."
+          }
+        },
+        {
+          "name": "Create Event",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" },
+              { "key": "Content-Type", "value": "application/json", "type": "text" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Sample Event\",\n  \"description\": \"This is a sample event.\",\n  \"duration\": 120,\n  \"location\": \"Addis Ababa\",\n  \"isPaid\": true,\n  \"price\": 50,\n  \"categoryId\": \"cat123\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/events", "host": ["{{baseUrl}}"], "path": ["events"] },
+            "description": "Creates a new event."
+          }
+        },
+        {
+          "name": "Update Event",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" },
+              { "key": "Content-Type", "value": "application/json", "type": "text" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Event Title\",\n  \"description\": \"Updated description.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/events/:id", "host": ["{{baseUrl}}"], "path": ["events", ":id"] },
+            "description": "Updates an event by ID. Only provided fields will be updated."
+          }
+        },
+        {
+          "name": "Delete Event",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" }
+            ],
+            "url": { "raw": "{{baseUrl}}/events/:id", "host": ["{{baseUrl}}"], "path": ["events", ":id"] },
+            "description": "Deletes an event by ID."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Event Steps",
+      "item": [
+        {
+          "name": "Get Steps for Event",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/events/:eventId/steps", "host": ["{{baseUrl}}"], "path": ["events", ":eventId", "steps"] },
+            "description": "Returns all steps for a given event."
+          }
+        },
+        {
+          "name": "Create Step",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" },
+              { "key": "Content-Type", "value": "application/json", "type": "text" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"stepOrder\": 1,\n  \"content\": \"Step 1: Introduction\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/events/:eventId/steps", "host": ["{{baseUrl}}"], "path": ["events", ":eventId", "steps"] },
+            "description": "Creates a new step for the specified event."
+          }
+        },
+        {
+          "name": "Update Step",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" },
+              { "key": "Content-Type", "value": "application/json", "type": "text" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"stepOrder\": 2,\n  \"content\": \"Step 1: Updated Content\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/events/:eventId/steps/:stepId", "host": ["{{baseUrl}}"], "path": ["events", ":eventId", "steps", ":stepId"] },
+            "description": "Updates a step for the specified event."
+          }
+        },
+        {
+          "name": "Delete Step",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" }
+            ],
+            "url": { "raw": "{{baseUrl}}/events/:eventId/steps/:stepId", "host": ["{{baseUrl}}"], "path": ["events", ":eventId", "steps", ":stepId"] },
+            "description": "Deletes a step from the specified event."
+          }
+        },
+        {
+          "name": "Reorder Steps",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" },
+              { "key": "Content-Type", "value": "application/json", "type": "text" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"steps\": [\n    { \"id\": \"step1\", \"stepOrder\": 1 },\n    { \"id\": \"step2\", \"stepOrder\": 2 }\n  ]\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/events/:eventId/steps/reorder", "host": ["{{baseUrl}}"], "path": ["events", ":eventId", "steps", "reorder"] },
+            "description": "Reorders steps for the specified event. Provide an array of step IDs and their new order."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Event Images",
+      "item": [
+        {
+          "name": "Upload Images",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "images", "type": "file", "src": "<path-to-image1.jpg>" },
+                { "key": "images", "type": "file", "src": "<path-to-image2.jpg>" }
+              ]
+            },
+            "url": { "raw": "{{baseUrl}}/events/:eventId/images", "host": ["{{baseUrl}}"], "path": ["events", ":eventId", "images"] },
+            "description": "Uploads one or more images to the specified event. Use form-data with key 'images'."
+          }
+        },
+        {
+          "name": "Set Featured Image",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" }
+            ],
+            "url": { "raw": "{{baseUrl}}/events/:eventId/images/:imageId/featured", "host": ["{{baseUrl}}"], "path": ["events", ":eventId", "images", ":imageId", "featured"] },
+            "description": "Sets the specified image as the featured image for the event."
+          }
+        },
+        {
+          "name": "Delete Image",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" }
+            ],
+            "url": { "raw": "{{baseUrl}}/events/:eventId/images/:imageId", "host": ["{{baseUrl}}"], "path": ["events", ":eventId", "images", ":imageId"] },
+            "description": "Deletes the specified image from the event."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Get Users Count",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" }
+            ],
+            "url": { "raw": "{{baseUrl}}/users/count", "host": ["{{baseUrl}}"], "path": ["users", "count"] },
+            "description": "Returns total number of users. Only admins can access."
+          }
+        },
+        {
+          "name": "Get My Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" }
+            ],
+            "url": { "raw": "{{baseUrl}}/users/me", "host": ["{{baseUrl}}"], "path": ["users", "me"] },
+            "description": "Returns the profile of the authenticated user."
+          }
+        },
+        {
+          "name": "Update User Role",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" },
+              { "key": "Content-Type", "value": "application/json", "type": "text" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"role\": \"ADMIN\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/users/:id/role", "host": ["{{baseUrl}}"], "path": ["users", ":id", "role"] },
+            "description": "Updates a user's role to USER, OWNER, or ADMIN. Only admins can perform this action. Cannot change your own role."
+          }
+        }
+      ]
+    }
+  ]
+}
