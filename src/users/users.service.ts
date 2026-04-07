@@ -75,6 +75,15 @@ export class UsersService {
     return this.excludePassword(user);
   }
 
+  async updateUser(userId: string, data: Partial<Pick<User, 'name' | 'email' | 'avatarUrl'>>): Promise<Omit<User, 'password'> | null> {
+    const user = await this.prisma.user.update({
+      where: { id: userId },
+      data,
+    });
+
+    return this.excludePassword(user);
+  }
+
   async updateUserStatus(userId: string, newStatus: 'ACTIVE' | 'SUSPENDED' | 'BANNED'): Promise<Omit<User, 'password'>> {
     const user = await this.prisma.user.update({
       where: { id: userId },
