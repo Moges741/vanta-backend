@@ -6,7 +6,13 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.enableCors();
+app.enableCors()
 
+app.enableCors({
+  origin: 'http://localhost:3001',
+  credentials: true,
+  allowedHeaders: ['Content-Type', 'Authorization'],
+})
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -15,8 +21,8 @@ async function bootstrap() {
     }),
   );
 
-  await app.listen(3344);
-  console.log(`Application is running on: 3344`);
+  await app.listen(3000);
+  console.log(`Application is running on: 3000`);
 }
 
 bootstrap();

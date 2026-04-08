@@ -3,6 +3,8 @@ import { RatingsService } from './ratings.service';
 import { RateEventDto } from './dto/rate-event.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
+
+
 @Controller('ratings')
 export class RatingsController {
   constructor(private readonly ratingsService: RatingsService) {}
